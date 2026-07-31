@@ -1,10 +1,9 @@
 name: Github Actions Example
-
 on:
   push:
     branches:
       - main   
-job:
+jobs:
   hello_world:
     runs-on: ubuntu-18.04
     steps:
