@@ -1,13 +1,17 @@
-name: Github Actions Example
+name: Say hello
+
 on:
   push:
     branches:
-      - main   
+      - main
+
 jobs:
   hello_world:
     runs-on: ubuntu-18.04
     steps:
-        - name: Echo Message
-          run: |
-            echo "Hello Brayan"
-            
+      - name: Echo the message
+        run: |
+          echo "Hola midu!"
+      - name: Dime la fecha
+        run: date
+      - run: ls -l
