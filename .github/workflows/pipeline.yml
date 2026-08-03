@@ -7,8 +7,7 @@ on:
       - main   
 jobs:
   hello_world:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
         - name: Echo Message
-          run: |
-            echo "Hello Brayan"
+          run: echo "Hello Brayan"
