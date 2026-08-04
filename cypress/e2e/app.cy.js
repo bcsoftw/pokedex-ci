@@ -8,7 +8,7 @@ describe('Test e2e', () => {
   })
 
   it('Frontend opened', () => {
-    cy.contains('Bulbasaur',{ timeout: 240000 })
+    cy.contains('bulbasaur',{ timeout: 240000 })
     cy.contains('Pokémon and Pokémon character names are trademarks of Nintendo.',{ timeout: 240000 })
   })
 })
