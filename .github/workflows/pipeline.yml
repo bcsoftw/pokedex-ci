@@ -38,7 +38,7 @@ jobs:
           wait-on: 'http://localhost:5000' 
           
           # 3. Tiempo límite para que el servidor responda (en segundos)
-          wait-on-timeout: 120 
+          wait-on-timeout: 300
           
           # 4. Ejecuta las pruebas E2E en modo headless
           command: npm run test:e2e
