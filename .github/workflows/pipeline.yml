@@ -50,6 +50,7 @@ jobs:
         run: npm install -g netlify-cli@15
       #  Tarjeta de despliegue usando los secretos de GitHub
       - name: Desplegar a Netlify
+        if: ${{ github.event_name == 'push'}}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
