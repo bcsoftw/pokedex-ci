@@ -42,3 +42,18 @@ jobs:
           
           # 4. Ejecuta las pruebas E2E en modo headless
           command: npm run test:e2e
+
+      # Forzamos una versión de la CLI compatible con Node 16
+      - name: Instalar Netlify CLI compatible con Node 16
+        run: npm install -g netlify-cli@15
+      #  Tarjeta de despliegue usando los secretos de GitHub
+      - name: Desplegar a Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            netlify deploy --dir=dist --prod
+          else
+            netlify deploy --dir=dist
+          fi
