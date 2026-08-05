@@ -3,8 +3,10 @@ name: Github Actions Example
 
 on:
   push:
-    branches:
-      - main   
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
 jobs:
   deploy:
     runs-on: ubuntu-22.04
