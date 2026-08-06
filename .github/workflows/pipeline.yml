@@ -137,7 +137,7 @@ jobs:
           name: dist
           path: dist
 
-      # Forzamos una versión de la CLI compatible con Node 16
+      # Forzamos una versión de la CLI compatible con Node16
       - name: Instalar Netlify CLI compatible con Node 16
         run: npm install -g netlify-cli@15
       #  Tarjeta de despliegue usando los secretos de GitHub
