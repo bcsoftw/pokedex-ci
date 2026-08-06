@@ -3,10 +3,24 @@ name: Github Actions Example
 
 on:
   push:
-    branches:
-      - main   
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize]
+
+permissions:
+  actions: write
+  contents: read
 jobs:
-  deploy:
+  avoid-redundant:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Cancel previous redundant builds
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+
+  lint:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
@@ -21,12 +35,70 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Lint
-        run: npm run eslint
+        run: npm run eslint 
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node 16 sample
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
       - name: Build
         run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+
+  test:
+    needs: [lint,build]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node 16 sample
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
       - name: Test
         run: npm run test
 
+  e2e-test:
+    needs: [lint,build]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node 16 sample
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      
       - name: E2E Test
         uses: cypress-io/github-action@v6
         with:
@@ -43,11 +115,30 @@ jobs:
           # 4. Ejecuta las pruebas E2E en modo headless
           command: npm run test:e2e
 
+
+  deploy:
+    needs: [test,e2e-test]
+    runs-on: ubuntu-22.04
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install Node 16 sample
+        uses: actions/setup-node@v4
+        with:
+          node-version: '16'
+      - name: Install dependencies
+        run: npm ci
+
       # Forzamos una versión de la CLI compatible con Node 16
       - name: Instalar Netlify CLI compatible con Node 16
         run: npm install -g netlify-cli@15
       #  Tarjeta de despliegue usando los secretos de GitHub
       - name: Desplegar a Netlify
+        if: ${{ github.event_name == 'push'}}
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
