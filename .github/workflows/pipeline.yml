@@ -103,7 +103,7 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           
-          # 1. Comando para levantar tu servidor local en segundo plano
+          # 1. Comando para levantar tu servidor local en segundo planoo
           start: npm run start-test 
           
           # 2. Espera a que el puerto 8080 responda antes de abrir Cypress
